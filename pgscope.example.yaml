@@ -1,0 +1,64 @@
+# Example PGScope configuration. Copy to pgscope.yaml or pass --config.
+# Prefer DATABASE_URL for secrets; avoid committing real credentials.
+
+format: text
+timeout: 30s
+connect_timeout: 10s
+statement_timeout: 15s
+lock_timeout: 2s
+max_conns: 4
+min_conns: 0
+long_query_threshold: 5m
+long_xact_threshold: 5m
+top_relations: 10
+top_indexes: 15
+top_queries: 20
+top_vacuum_tables: 25
+query_preview_len: 120
+query_sort: total-time
+collect_query_text: true
+sensitive_data_safe: true
+deep_scan: false
+enable_queries: true
+enable_vacuum: true
+enable_wal: true
+enable_replication: true
+enable_indexes: true
+enable_hypopg: false
+color: true
+verbose: false
+read_only: true
+
+# Phase 4 — historical telemetry (local SQLite; no credentials stored)
+monitoring:
+  enabled: false
+  default_interval: 30s
+  collection_timeout: 10s
+  max_concurrent_collectors: 3
+
+history:
+  enabled: false
+  backend: sqlite
+  path: ~/.pgscope/history.db
+  store_query_text: false
+  retention:
+    raw_metrics: 168h      # 7d
+    aggregated_metrics: 2160h # 90d
+    incidents: 8760h      # 365d
+
+regression:
+  enabled: true
+  baseline_window: 1h
+  evaluation_window: 10m
+  min_samples: 5
+  sensitivity: medium
+
+incidents:
+  enabled: true
+  deduplication_window: 10m
+  auto_resolve_after: 15m
+
+correlation:
+  enabled: true
+  max_evidence_nodes: 1000
+  max_hypotheses_per_incident: 10
