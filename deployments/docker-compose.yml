@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: pgscope
+      POSTGRES_PASSWORD: pgscope
+      POSTGRES_DB: pgscope
+    command:
+      - postgres
+      - -c
+      - shared_preload_libraries=pg_stat_statements
+      - -c
+      - pg_stat_statements.track=all
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pgscope -d pgscope"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d:ro
+
+  postgres-vector:
+    image: pgvector/pgvector:pg16
+    profiles: ["vector"]
+    environment:
+      POSTGRES_USER: pgscope
+      POSTGRES_PASSWORD: pgscope
+      POSTGRES_DB: pgscope
+    command:
+      - postgres
+      - -c
+      - shared_preload_libraries=pg_stat_statements
+      - -c
+      - pg_stat_statements.track=all
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pgscope -d pgscope"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+    volumes:
+      - ./init-vector:/docker-entrypoint-initdb.d:ro
