@@ -1,0 +1,51 @@
+name: ci
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: pgscope
+          POSTGRES_PASSWORD: pgscope
+          POSTGRES_DB: pgscope
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U pgscope -d pgscope"
+          --health-interval 2s
+          --health-timeout 5s
+          --health-retries 15
+    env:
+      DATABASE_URL: postgres://pgscope:pgscope@localhost:5432/pgscope?sslmode=disable
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26.x"
+      - name: Vet
+        run: go vet ./...
+      - name: Test
+        run: go test ./...
+      - name: Race
+        run: go test -race ./...
+      - name: Build
+        run: go build -o bin/pgscope ./cmd/pgscope
+      - name: CLI smoke
+        run: |
+          ./bin/pgscope version
+          ./bin/pgscope connect --no-color
+          ./bin/pgscope scan --no-color
+          ./bin/pgscope queries top --limit 5 --no-color || true
+          ./bin/pgscope indexes inspect --no-color
+          ./bin/pgscope vacuum inspect --no-color
+          ./bin/pgscope wal checkpoints --no-color
+          ./bin/pgscope replication inspect --no-color
+          echo 'SELECT 1' > /tmp/pgscope_q.sql
+          ./bin/pgscope queries explain --file /tmp/pgscope_q.sql --no-color
