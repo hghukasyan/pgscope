@@ -1,0 +1,39 @@
+# Example opt-in pgvector recall/tune workload.
+# Never point this at production without an isolated replica/lab database.
+
+target:
+  schema: public
+  table: documents
+  id_column: id
+  vector_column: embedding
+  # index_name: documents_embedding_hnsw
+
+search:
+  metric: cosine
+  k: [1, 5, 10]
+  filter:
+    column: tenant_id
+    operator: IN
+    values: [tenant_a, tenant_b]
+
+benchmark:
+  samples: 20
+  concurrency: 1
+  timeout: 2s
+  max_duration: 2m
+  warmup: 2
+  environment: isolated
+  include_samples: false
+
+objectives:
+  min_recall_at_10: 0.90
+  max_p95_latency_ms: 100
+  max_error_rate: 0.05
+
+tuning:
+  hnsw_ef_search: [20, 40, 80]
+  ivfflat_probes: [1, 5, 10]
+  max_candidates: 6
+
+queries:
+  sample_from_table: true
