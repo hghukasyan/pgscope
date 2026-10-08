@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 420" role="img" aria-label="PGScope banner">
+  <title>PGScope  See deeper. Diagnose smarter.</title>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#070B14"/>
+      <stop offset="55%" stop-color="#0B1526"/>
+      <stop offset="100%" stop-color="#0A1F2E"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#14B8A6"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#1E293B" stroke-width="1" opacity="0.45"/>
+    </pattern>
+  </defs>
+  <rect width="1280" height="420" fill="url(#bg)"/>
+  <rect width="1280" height="420" fill="url(#grid)"/>
+  <rect x="0" y="0" width="1280" height="4" fill="url(#accent)"/>
+
+  <!-- Logo mark -->
+  <g transform="translate(120,110) scale(1.55)">
+    <circle cx="64" cy="64" r="46" fill="none" stroke="url(#accent)" stroke-width="5"/>
+    <ellipse cx="64" cy="48" rx="22" ry="8" fill="#070B14" stroke="#60A5FA" stroke-width="3"/>
+    <path d="M42 48 v28 c0 6 10 10 22 10 s22-4 22-10 V48"
+          fill="none" stroke="#60A5FA" stroke-width="3"/>
+    <ellipse cx="64" cy="62" rx="22" ry="7" fill="none" stroke="#14B8A6" stroke-width="2"/>
+    <ellipse cx="64" cy="76" rx="22" ry="7" fill="none" stroke="#14B8A6" stroke-width="2" opacity="0.55"/>
+    <line x1="94" y1="94" x2="112" y2="112" stroke="#14B8A6" stroke-width="7" stroke-linecap="round"/>
+  </g>
+
+  <text x="360" y="175" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="72" font-weight="700" fill="#F8FAFC">PGScope</text>
+  <text x="360" y="230" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="28" font-weight="600" fill="#14B8A6">See deeper. Diagnose smarter.</text>
+  <text x="360" y="280" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="20" fill="#94A3B8">Open-source PostgreSQL performance intelligence,</text>
+  <text x="360" y="308" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="20" fill="#94A3B8">root-cause analysis, and pgvector optimization.</text>
+</svg>
