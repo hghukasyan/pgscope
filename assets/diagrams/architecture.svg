@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 520" role="img" aria-label="PGScope architecture">
+  <title>PGScope architecture</title>
+  <rect width="920" height="520" fill="#070B14"/>
+  <defs>
+    <linearGradient id="a" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#3B82F6"/><stop offset="100%" stop-color="#14B8A6"/>
+    </linearGradient>
+  </defs>
+  <style>
+    .box { fill:#0B1526; stroke:#334155; stroke-width:1.5; rx:10; }
+    .t { font-family: ui-sans-serif, system-ui, sans-serif; fill:#E2E8F0; font-size:14px; }
+    .h { font-family: ui-sans-serif, system-ui, sans-serif; fill:#F8FAFC; font-size:15px; font-weight:700; }
+    .s { font-family: ui-sans-serif, system-ui, sans-serif; fill:#94A3B8; font-size:12px; }
+    .line { stroke:#475569; stroke-width:1.5; fill:none; }
+  </style>
+
+  <rect class="box" x="340" y="24" width="240" height="56"/>
+  <text class="h" x="460" y="50" text-anchor="middle">PGScope CLI</text>
+  <text class="s" x="460" y="68" text-anchor="middle">scan · queries · monitor · investigate</text>
+
+  <line class="line" x1="460" y1="80" x2="460" y2="112"/>
+
+  <rect class="box" x="300" y="112" width="320" height="52"/>
+  <text class="h" x="460" y="143" text-anchor="middle">Diagnostic Core</text>
+
+  <line class="line" x1="200" y1="164" x2="200" y2="196"/>
+  <line class="line" x1="460" y1="164" x2="460" y2="196"/>
+  <line class="line" x1="720" y1="164" x2="720" y2="196"/>
+  <line class="line" x1="200" y1="164" x2="720" y2="164"/>
+
+  <rect class="box" x="80" y="196" width="240" height="88"/>
+  <text class="h" x="200" y="224" text-anchor="middle">Collectors</text>
+  <text class="s" x="200" y="246" text-anchor="middle">activity · statements · locks</text>
+  <text class="s" x="200" y="264" text-anchor="middle">vacuum · WAL · replication · vector</text>
+
+  <rect class="box" x="340" y="196" width="240" height="88"/>
+  <text class="h" x="460" y="224" text-anchor="middle">Analysis</text>
+  <text class="s" x="460" y="246" text-anchor="middle">rules · EXPLAIN · regressions</text>
+  <text class="s" x="460" y="264" text-anchor="middle">correlation · RCA hypotheses</text>
+
+  <rect class="box" x="600" y="196" width="240" height="88"/>
+  <text class="h" x="720" y="224" text-anchor="middle">Reporting</text>
+  <text class="s" x="720" y="246" text-anchor="middle">text · JSON · YAML</text>
+  <text class="s" x="720" y="264" text-anchor="middle">incident timelines</text>
+
+  <line class="line" x1="200" y1="284" x2="200" y2="318"/>
+  <line class="line" x1="460" y1="284" x2="460" y2="318"/>
+  <line class="line" x1="200" y1="318" x2="460" y2="318"/>
+  <line class="line" x1="330" y1="318" x2="330" y2="348"/>
+
+  <rect class="box" x="200" y="348" width="260" height="72"/>
+  <text class="h" x="330" y="378" text-anchor="middle">PostgreSQL 1418</text>
+  <text class="s" x="330" y="400" text-anchor="middle">read-only collectors + timeouts</text>
+
+  <rect class="box" x="500" y="348" width="280" height="72"/>
+  <text class="h" x="640" y="378" text-anchor="middle">Optional extensions</text>
+  <text class="s" x="640" y="400" text-anchor="middle">pg_stat_statements · pgvector</text>
+
+  <line class="line" x1="460" y1="284" x2="640" y2="284"/>
+  <line class="line" x1="640" y1="284" x2="640" y2="318"/>
+
+  <rect class="box" x="560" y="430" width="280" height="64" stroke="url(#a)"/>
+  <text class="h" x="700" y="458" text-anchor="middle">Local history (SQLite)</text>
+  <text class="s" x="700" y="478" text-anchor="middle">metrics · incidents · hypotheses</text>
+
+  <line class="line" x1="640" y1="420" x2="640" y2="430"/>
+</svg>
