@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="336" viewBox="0 0 980 336" role="img" aria-label="pgscope indexes">
+  <title>pgscope indexes</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0B1220"/>
+      <stop offset="100%" stop-color="#070B14"/>
+    </linearGradient>
+  </defs>
+  <rect width="980" height="336" rx="12" fill="url(#bg)" stroke="#1E293B" stroke-width="2"/>
+  <circle cx="28" cy="24" r="6" fill="#F87171"/>
+  <circle cx="50" cy="24" r="6" fill="#FBBF24"/>
+  <circle cx="72" cy="24" r="6" fill="#34D399"/>
+  <text x="96" y="28" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" fill="#64748B">pgscope indexes</text>
+  <text font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13" xml:space="preserve">
+    <tspan x="28" y="56" fill="#5EEAD4">$ pgscope indexes inspect</tspan><tspan x="28" y="74" fill="#E2E8F0">Indexes: 5  invalid=0  zero-scan candidates=1  duplicates=1  redundant=0</tspan><tspan x="28" y="92" fill="#E2E8F0">  - public.demo_orders_pkey on public.demo_orders am=btree size=128 kB scans=0 valid=true CREATE UNIQUE INDEX demo_or…</tspan><tspan x="28" y="110" fill="#E2E8F0">  - public.demo_orders_customer_idx on public.demo_orders am=btree size=88 kB scans=1 valid=true CREATE INDEX demo_or…</tspan><tspan x="28" y="128" fill="#E2E8F0">  - public.demo_orders_status_dup_idx on public.demo_orders am=btree size=64 kB scans=1 valid=true CREATE INDEX demo_…</tspan><tspan x="28" y="146" fill="#E2E8F0">  - public.demo_orders_status_idx on public.demo_orders am=btree size=64 kB scans=0 valid=true CREATE INDEX demo_orde…</tspan><tspan x="28" y="164" fill="#E2E8F0">  - public.demo_orders_created_idx on public.demo_orders am=btree size=48 kB scans=1 valid=true CREATE INDEX demo_ord…</tspan><tspan x="28" y="182" fill="#E2E8F0"> </tspan><tspan x="28" y="200" fill="#5EEAD4">$ pgscope indexes duplicates</tspan><tspan x="28" y="218" fill="#E2E8F0">Duplicate groups: 1</tspan><tspan x="28" y="236" fill="#E2E8F0">  public.demo_orders: Identical access method, columns/expressions, includes, predicate, opclasses, collations, and u…</tspan><tspan x="28" y="254" fill="#E2E8F0">    - public.demo_orders_status_dup_idx</tspan><tspan x="28" y="272" fill="#E2E8F0">    - public.demo_orders_status_idx</tspan><tspan x="28" y="290" fill="#E2E8F0">Redundant B-tree candidates: 0</tspan>
+  </text>
+  <text x="28" y="326" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" fill="#475569">Demo environment output · credentials redacted</text>
+</svg>

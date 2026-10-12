@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="282" viewBox="0 0 980 282" role="img" aria-label="pgscope queries top">
+  <title>pgscope queries top</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0B1220"/>
+      <stop offset="100%" stop-color="#070B14"/>
+    </linearGradient>
+  </defs>
+  <rect width="980" height="282" rx="12" fill="url(#bg)" stroke="#1E293B" stroke-width="2"/>
+  <circle cx="28" cy="24" r="6" fill="#F87171"/>
+  <circle cx="50" cy="24" r="6" fill="#FBBF24"/>
+  <circle cx="72" cy="24" r="6" fill="#34D399"/>
+  <text x="96" y="28" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" fill="#64748B">pgscope queries top</text>
+  <text font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13" xml:space="preserve">
+    <tspan x="28" y="56" fill="#5EEAD4">$ pgscope queries top --limit 8</tspan><tspan x="28" y="74" fill="#E2E8F0">Top queries (sort=total-time limit=8)</tspan><tspan x="28" y="92" fill="#E2E8F0">QUERYID                 CALLS     TOTAL_MS      MEAN_MS  SHARED_RD    TEMP_IO     ROWS  QUERY</tspan><tspan x="28" y="110" fill="#E2E8F0">1981807557222078541          1         20.5       20.481          0          0     5000  INSERT INTO demo_orders (cus…</tspan><tspan x="28" y="128" fill="#E2E8F0">5036059373307476006         18         11.8        0.657          0          0       18  SELECT pg_database_size(curr…</tspan><tspan x="28" y="146" fill="#E2E8F0">3051239456575550206          1          4.3        4.271         41          0        0  CREATE TABLE IF NOT EXISTS d…</tspan><tspan x="28" y="164" fill="#E2E8F0">-6987234975875304399          1          3.3        3.276          0          0        0  CREATE EXTENSION IF NOT EXI…</tspan><tspan x="28" y="182" fill="#E2E8F0">-6475530472003029060          1          2.8        2.795          6          0        0  ANALYZE demo_orders</tspan><tspan x="28" y="200" fill="#E2E8F0">-5718286534039035275         20          2.1        0.106          0          0      321  SELECT queryid, query, dbid…</tspan><tspan x="28" y="218" fill="#E2E8F0">-8429842630676898938          1          2.0        1.980          0          0        0  CREATE INDEX IF NOT EXISTS …</tspan><tspan x="28" y="236" fill="#E2E8F0">-3001077671193128586          4          1.7        0.416          0          0        0  -- Register a view on the f…</tspan>
+  </text>
+  <text x="28" y="272" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" fill="#475569">Demo environment output · credentials redacted</text>
+</svg>

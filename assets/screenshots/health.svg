@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="246" viewBox="0 0 980 246" role="img" aria-label="pgscope health / vacuum">
+  <title>pgscope health / vacuum</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0B1220"/>
+      <stop offset="100%" stop-color="#070B14"/>
+    </linearGradient>
+  </defs>
+  <rect width="980" height="246" rx="12" fill="url(#bg)" stroke="#1E293B" stroke-width="2"/>
+  <circle cx="28" cy="24" r="6" fill="#F87171"/>
+  <circle cx="50" cy="24" r="6" fill="#FBBF24"/>
+  <circle cx="72" cy="24" r="6" fill="#34D399"/>
+  <text x="96" y="28" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" fill="#64748B">pgscope health / vacuum</text>
+  <text font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13" xml:space="preserve">
+    <tspan x="28" y="56" fill="#5EEAD4">$ pgscope health</tspan><tspan x="28" y="74" fill="#E2E8F0">Health: warning</tspan><tspan x="28" y="92" fill="#E2E8F0">PostgreSQL 16 database &quot;pgscope&quot;; 4 finding(s) (0 critical, 1 warning, 3 info); 2 collection limitation(s); connectio…</tspan><tspan x="28" y="110" fill="#E2E8F0">Connections: 1/100 (1.0%) active=1 idle=0 idle_in_xact=0</tspan><tspan x="28" y="128" fill="#E2E8F0">Locks waiting: 0  chains: 0</tspan><tspan x="28" y="146" fill="#E2E8F0">- [warning] IDX.DUPLICATE: Structurally identical indexes detected</tspan><tspan x="28" y="164" fill="#E2E8F0"> </tspan><tspan x="28" y="182" fill="#5EEAD4">$ pgscope vacuum risks</tspan><tspan x="28" y="200" fill="#E2E8F0">No vacuum risk tables in the sampled set.</tspan>
+  </text>
+  <text x="28" y="236" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" fill="#475569">Demo environment output · credentials redacted</text>
+</svg>
