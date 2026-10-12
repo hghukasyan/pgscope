@@ -1,0 +1,106 @@
+$ pgscope scan
+PGScope Scan
+Status:  WARNING
+Summary: PostgreSQL 16 database "pgscope"; 4 finding(s) (0 critical, 1 warning, 3 info); 2 collection limitation(s); connections 1/100 (1%)
+Collected: 2026-11-08T00:54:10Z (took 28 ms)
+
+Instance
+  Version:    PostgreSQL 16.15
+  Database:   pgscope
+  User:       pgscope
+  Recovery:   false
+  Extensions: pg_stat_statements@1.10, plpgsql@1.0
+  Caps:       pg_stat_statements=true pgvector=false hypopg=false
+
+Connections
+  Total: 1 / 100 (1.0%)  active=1 idle=0 idle_in_xact=0 waiting_locks=0
+
+Transactions
+  Long-running: 0  idle-in-xact (threshold): 0  datfrozenxid age: 28
+
+Locks
+  Waiting: 0  blocking chains: 0  deadlocks(counter): 0
+
+Storage
+  Database size: 8375 kB
+  Top relations:
+    - public.demo_orders (table) 744 kB
+
+Indexes
+  Inventoried: 5  invalid: 0  zero-scan candidates: 1  duplicates: 1
+  Largest:
+    - public.demo_orders_pkey on public.demo_orders 128 kB scans=0 am=btree
+    - public.demo_orders_customer_idx on public.demo_orders 88 kB scans=1 am=btree
+    - public.demo_orders_status_dup_idx on public.demo_orders 64 kB scans=1 am=btree
+    - public.demo_orders_status_idx on public.demo_orders 64 kB scans=0 am=btree
+    - public.demo_orders_created_idx on public.demo_orders 48 kB scans=1 am=btree
+
+Queries
+  Top statements: 20 (sort=total-time)
+    - id=1981807557222078541 calls=1 total=20.5ms mean=20.481ms INSERT INTO demo_orders (customer_id, status, amount) SELECT (random()*$1)::int, (ARRAY[$2,$3,$4,$5])[$6+(random()*$7...
+    - id=5036059373307476006 calls=18 total=11.8ms mean=0.657ms SELECT pg_database_size(current_database()), pg_size_pretty(pg_database_size(current_database()))
+    - id=3051239456575550206 calls=1 total=4.3ms mean=4.271ms CREATE TABLE IF NOT EXISTS demo_orders ( id bigserial PRIMARY KEY, customer_id int NOT NULL, status text NOT NULL, am...
+    - id=-6987234975875304399 calls=1 total=3.3ms mean=3.276ms CREATE EXTENSION IF NOT EXISTS pg_stat_statements
+    - id=-6475530472003029060 calls=1 total=2.8ms mean=2.795ms ANALYZE demo_orders
+
+Vacuum
+  Tables sampled: 1  risk tables: 0  active vacuums: 0
+
+WAL / Checkpoints
+  wal_bytes: 12245568
+  checkpoints: timed=110 requested=1
+
+Replication
+  Role: primary  connections: 0  slots: 0
+
+Vector (pgvector)
+  Available: false
+
+Findings (4)
+  [WARNING] IDX.DUPLICATE — Structurally identical indexes detected
+    Indexes [public.demo_orders_status_dup_idx public.demo_orders_status_idx] appear structurally identical on public.demo_orders.
+    Probable cause: Repeated migrations or overlapping CREATE INDEX statements.
+    Remediation: Manually review and consider dropping one duplicate after confirming no dependency. PGScope will not drop indexes.
+    Evidence:
+      - [fact] table = public.demo_orders
+      - [fact] reason = Identical access method, columns/expressions, includes, predicate, opclasses, collations, and uniqueness
+      - [fact] public.demo_orders_status_dup_idx = CREATE INDEX demo_orders_status_dup_idx ON public.demo_orders USING btree (status)
+      - [fact] public.demo_orders_status_idx = CREATE INDEX demo_orders_status_idx ON public.demo_orders USING btree (status)
+
+  [INFO] IDX.ZERO_SCANS — Indexes with zero scans observed
+    Some non-primary, non-unique, non-constraint indexes have zero recorded scans. This alone is not sufficient evidence to drop them.
+    Probable cause: Indexes may be unused, used only rarely (stats recently reset), required for uncommon admin queries, or used via constraint paths not reflected in idx_scan.
+    Remediation: Track these indexes across a full business cycle before considering removal. Never drop based solely on idx_scan = 0.
+    Evidence:
+      - [observation] Non-unique indexes with zero scans = 1
+      - [fact] public.demo_orders_status_idx on public.demo_orders size=64 kB am=btree = idx_scan=0
+
+  [INFO] VACUUM.STALE_STATS — Table past effective autoanalyze threshold
+    public.demo_orders n_mod_since_analyze=5000 exceeds analyze threshold 1050 (last_autoanalyze=).
+    Probable cause: High modification rate relative to autoanalyze settings, or analyze delayed by vacuum workload.
+    Remediation: Allow autoanalyze to catch up; consider manual ANALYZE during maintenance if plans are clearly wrong.
+    Evidence:
+      - [fact] n_mod_since_analyze = 5000
+      - [fact] analyze_threshold = 1050
+      - [fact] last_autoanalyze
+
+  [INFO] WAL.BUFFERS_FULL — WAL buffers filled since statistics reset
+    wal_buffers_full=23 (cumulative). This can indicate WAL buffer pressure under write bursts, not proof of sustained I/O saturation.
+    Probable cause: wal_buffers undersized for peak WAL generation, or extreme write bursts.
+    Remediation: Measure under load before raising wal_buffers; correlate with WAL write/sync times.
+    Evidence:
+      - [fact] wal_buffers_full = 23
+      - [fact] wal_buffers = 4MB
+
+Recommendations
+  - [high] Structurally identical indexes detected: Manually review and consider dropping one duplicate after confirming no dependency. PGScope will not drop indexes.
+  - [high] Indexes with zero scans observed: Track these indexes across a full business cycle before considering removal. Never drop based solely on idx_scan = 0.
+  - [low] Table past effective autoanalyze threshold: Allow autoanalyze to catch up; consider manual ANALYZE during maintenance if plans are clearly wrong.
+  - [medium] WAL buffers filled since statistics reset: Measure under load before raising wal_buffers; correlate with WAL write/sync times.
+
+Collection limitations
+  - [pgvector] Extension not installed — Vector diagnostics unavailable (Phase 3)
+    Hint: CREATE EXTENSION vector;
+  - [pgvector] Extension not installed — Vector discovery, recall, and tuning unavailable
+    Hint: CREATE EXTENSION vector;
+

@@ -1,0 +1,14 @@
+$ pgscope indexes inspect
+Indexes: 5  invalid=0  zero-scan candidates=1  duplicates=1  redundant=0
+  - public.demo_orders_pkey on public.demo_orders am=btree size=128 kB scans=0 valid=true CREATE UNIQUE INDEX demo_orders_pkey ON public.demo_orders USING btree (id)
+  - public.demo_orders_customer_idx on public.demo_orders am=btree size=88 kB scans=1 valid=true CREATE INDEX demo_orders_customer_idx ON public.demo_orders USING btree (cust...
+  - public.demo_orders_status_dup_idx on public.demo_orders am=btree size=64 kB scans=1 valid=true CREATE INDEX demo_orders_status_dup_idx ON public.demo_orders USING btree (st...
+  - public.demo_orders_status_idx on public.demo_orders am=btree size=64 kB scans=0 valid=true CREATE INDEX demo_orders_status_idx ON public.demo_orders USING btree (status)
+  - public.demo_orders_created_idx on public.demo_orders am=btree size=48 kB scans=1 valid=true CREATE INDEX demo_orders_created_idx ON public.demo_orders USING btree (creat...
+
+$ pgscope indexes duplicates
+Duplicate groups: 1
+  public.demo_orders: Identical access method, columns/expressions, includes, predicate, opclasses, collations, and uniqueness
+    - public.demo_orders_status_dup_idx
+    - public.demo_orders_status_idx
+Redundant B-tree candidates: 0

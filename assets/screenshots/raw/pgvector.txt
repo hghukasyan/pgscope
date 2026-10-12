@@ -1,0 +1,11 @@
+$ pgscope vector inspect
+pgvector 0.8.7 (schema=public)
+  types: public.halfvec, public.sparsevec, public.vector
+  access methods: hnsw, ivfflat (hnsw=true ivfflat=true)
+  operators: <#>, <%>, <+>, <->, <=>, <~>
+  settings: hnsw.ef_search, hnsw.iterative_scan, hnsw.max_scan_tuples, hnsw.scan_mem_multiplier, ivfflat.probes, ivfflat.iterative_scan, ivfflat.max_probes
+Columns (1):
+  - public.documents.embedding type=vector dims=8 rows≈400 indexed=true
+Indexes (2):
+  - public.documents_embedding_hnsw am=hnsw opc=vector_cosine_ops metric=cosine size=144 kB scans=0 valid=true opts=map[ef_construction:64 m:16]
+  - public.documents_embedding_ivf am=ivfflat opc=vector_l2_ops metric=l2 size=176 kB scans=0 valid=true opts=map[lists:20]
