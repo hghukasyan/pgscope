@@ -75,6 +75,7 @@ When a collector cannot run (permissions, missing extension, cloud restrictions)
 | `VEC.MISSING_INDEX` | info | Larger vector column without ANN index |
 | `VEC.IVFFLAT_LISTS` | info | Extremely low lists vs table size |
 | `VEC.HNSW_EF_CONSTRUCTION` | info | Unusual ef_construction < m |
+| `VEC.HNSW_MEMORY_FIT` | warning | HNSW index larger than shared_buffers and/or effective_cache_size |
 | `VEC.INDEX_ZERO_SCANS` | info | Large ANN index with zero scans |
 | `VEC.EXPLAIN_*` / `VEC.OP_MISMATCH` | info/warning | Vector plan diagnostics |
 | `VEC.RECALL_BELOW_TARGET` | warning | Measured Recall@K below objective |

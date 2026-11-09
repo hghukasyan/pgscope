@@ -61,6 +61,8 @@ Operator availability is discovered from catalogs; do not assume every type supp
 - **HNSW**: graph index; build params `m`, `ef_construction`; search primarily via `hnsw.ef_search` (and iterative scan settings when available).
 - **IVFFlat**: inverted lists; build param `lists`; search via `ivfflat.probes` (and iterative scan / max_probes when available).
 
+`pgscope vector inspect` and scan reports show each HNSW index size next to `shared_buffers` and `effective_cache_size`. When an index exceeds those cache estimates, rule `VEC.HNSW_MEMORY_FIT` warns: ANN latency often jumps once the graph spills to disk. Host RAM / OS page cache are not visible from catalogs, so this is a residency risk signal, not proof of I/O.
+
 PGScope never rebuilds indexes automatically. Build-parameter experiments belong in an isolated lab.
 
 ## Recall@K methodology

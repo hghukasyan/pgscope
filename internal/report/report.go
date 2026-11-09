@@ -180,6 +180,34 @@ func writeText(w io.Writer, result models.ScanResult, color bool) error {
 			fmt.Fprintf(w, "  Version: %s  columns: %d  ann_indexes: %d  hnsw=%v ivfflat=%v\n",
 				s.Vector.Capabilities.ExtensionVersion, len(s.Vector.Columns), len(s.Vector.Indexes),
 				s.Vector.Capabilities.HasHNSW, s.Vector.Capabilities.HasIVFFlat)
+			settings := s.Vector.Settings
+			if settings == nil {
+				settings = map[string]string{}
+			}
+			sb, ec := settings["shared_buffers"], settings["effective_cache_size"]
+			if sb == "" && s.Instance.Settings != nil {
+				sb = s.Instance.Settings["shared_buffers"]
+			}
+			if ec == "" && s.Instance.Settings != nil {
+				ec = s.Instance.Settings["effective_cache_size"]
+			}
+			if sb != "" || ec != "" {
+				fmt.Fprintf(w, "  Memory: shared_buffers=%s  effective_cache_size=%s\n",
+					fallbackDash(sb), fallbackDash(ec))
+			}
+			for _, idx := range s.Vector.Indexes {
+				if idx.AccessMethod != "hnsw" || idx.SizeBytes <= 0 {
+					continue
+				}
+				fmt.Fprintf(w, "  HNSW %s.%s size=%s", idx.Schema, idx.Name, idx.SizePretty)
+				if sb != "" {
+					fmt.Fprintf(w, "  vs shared_buffers=%s", sb)
+				}
+				if ec != "" {
+					fmt.Fprintf(w, "  vs effective_cache_size=%s", ec)
+				}
+				fmt.Fprintln(w)
+			}
 		}
 		fmt.Fprintln(w)
 	}
@@ -273,4 +301,11 @@ func severityColor(c colorSet, sev models.Severity) string {
 	default:
 		return c.cyan
 	}
+}
+
+func fallbackDash(s string) string {
+	if s == "" {
+		return "-"
+	}
+	return s
 }

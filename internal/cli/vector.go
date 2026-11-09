@@ -80,10 +80,39 @@ func newVectorInspectCmd(opts *Options) *cobra.Command {
 				fmt.Fprintf(opts.Out, "  - %s.%s.%s type=%s dims=%s rows≈%d indexed=%v\n",
 					col.Schema, col.Table, col.Column, col.TypeName, dims, col.EstimatedRows, col.HasVectorIndex)
 			}
+			mem := vector.MemoryContextFromSettings(inv.Settings)
+			if mem.SharedBuffersKnown || mem.EffectiveCacheKnown {
+				fmt.Fprintf(opts.Out, "Memory context:")
+				if mem.SharedBuffersKnown {
+					fmt.Fprintf(opts.Out, " shared_buffers=%s", mem.SharedBuffersPretty)
+				}
+				if mem.EffectiveCacheKnown {
+					fmt.Fprintf(opts.Out, " effective_cache_size=%s", mem.EffectiveCachePretty)
+				}
+				fmt.Fprintln(opts.Out)
+			}
 			fmt.Fprintf(opts.Out, "Indexes (%d):\n", len(inv.Indexes))
 			for _, idx := range inv.Indexes {
 				fmt.Fprintf(opts.Out, "  - %s.%s am=%s opc=%s metric=%s size=%s scans=%d valid=%t opts=%v\n",
 					idx.Schema, idx.Name, idx.AccessMethod, idx.OperatorClass, idx.DistanceMetric, idx.SizePretty, idx.IndexScans, idx.IsValid, idx.Options)
+				if idx.AccessMethod == "hnsw" && idx.SizeBytes > 0 && (mem.SharedBuffersKnown || mem.EffectiveCacheKnown) {
+					fmt.Fprintf(opts.Out, "      vs memory: index=%s", idx.SizePretty)
+					if mem.SharedBuffersKnown {
+						fit := "fits"
+						if idx.SizeBytes > mem.SharedBuffersBytes {
+							fit = "exceeds"
+						}
+						fmt.Fprintf(opts.Out, "  shared_buffers=%s (%s)", mem.SharedBuffersPretty, fit)
+					}
+					if mem.EffectiveCacheKnown {
+						fit := "fits"
+						if idx.SizeBytes > mem.EffectiveCacheBytes {
+							fit = "exceeds"
+						}
+						fmt.Fprintf(opts.Out, "  effective_cache_size=%s (%s)", mem.EffectiveCachePretty, fit)
+					}
+					fmt.Fprintln(opts.Out)
+				}
 			}
 			if len(findings) > 0 {
 				fmt.Fprintf(opts.Out, "Findings (%d):\n", len(findings))

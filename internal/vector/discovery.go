@@ -49,6 +49,13 @@ func Discover(ctx context.Context, pool *pgxpool.Pool, opts DiscoverOptions) (mo
 			inv.Settings[name] = val
 		}
 	}
+	// Memory GUCs contextualize HNSW residency: latency jumps when the graph spills to disk.
+	for _, name := range []string{"shared_buffers", "effective_cache_size"} {
+		var val string
+		if err := pool.QueryRow(ctx, `SELECT current_setting($1, true)`, name).Scan(&val); err == nil && val != "" {
+			inv.Settings[name] = val
+		}
+	}
 
 	cols, clim, err := discoverColumns(ctx, pool, opts, caps)
 	inv.Limitations = append(inv.Limitations, clim...)

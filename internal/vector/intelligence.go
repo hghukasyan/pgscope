@@ -3,7 +3,9 @@ package vector
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
+	"unicode"
 
 	"github.com/hghukasyan/pgscope/pkg/models"
 )
@@ -19,7 +21,158 @@ func AnalyzeInventory(inv models.VectorInventory, database string) []models.Find
 	findings = append(findings, missingIndexFindings(inv, database, now)...)
 	findings = append(findings, paramFindings(inv, database, now)...)
 	findings = append(findings, unusedIndexFindings(inv, database, now)...)
+	findings = append(findings, hnswMemoryFitFindings(inv, database, now)...)
 	return findings
+}
+
+// HNSWMemoryContext compares measured HNSW index sizes to cache-related GUCs.
+type HNSWMemoryContext struct {
+	SharedBuffersBytes      int64
+	SharedBuffersPretty     string
+	EffectiveCacheBytes     int64
+	EffectiveCachePretty    string
+	SharedBuffersKnown      bool
+	EffectiveCacheKnown     bool
+}
+
+// MemoryContextFromSettings parses shared_buffers / effective_cache_size from settings maps.
+func MemoryContextFromSettings(settings map[string]string) HNSWMemoryContext {
+	var ctx HNSWMemoryContext
+	if settings == nil {
+		return ctx
+	}
+	if v := settings["shared_buffers"]; v != "" {
+		ctx.SharedBuffersPretty = v
+		if n, err := ParsePostgresSize(v); err == nil {
+			ctx.SharedBuffersBytes = n
+			ctx.SharedBuffersKnown = true
+		}
+	}
+	if v := settings["effective_cache_size"]; v != "" {
+		ctx.EffectiveCachePretty = v
+		if n, err := ParsePostgresSize(v); err == nil {
+			ctx.EffectiveCacheBytes = n
+			ctx.EffectiveCacheKnown = true
+		}
+	}
+	return ctx
+}
+
+// ParsePostgresSize parses PostgreSQL pretty sizes (e.g. "128MB", "4GB", "8192").
+// Bare integers are treated as bytes.
+func ParsePostgresSize(s string) (int64, error) {
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return 0, fmt.Errorf("empty size")
+	}
+	i := 0
+	for i < len(s) && (unicode.IsDigit(rune(s[i])) || s[i] == '.') {
+		i++
+	}
+	if i == 0 {
+		return 0, fmt.Errorf("invalid size %q", s)
+	}
+	num, err := strconv.ParseFloat(s[:i], 64)
+	if err != nil {
+		return 0, fmt.Errorf("invalid size %q: %w", s, err)
+	}
+	unit := strings.ToLower(strings.TrimSpace(s[i:]))
+	unit = strings.ReplaceAll(unit, " ", "")
+	var mul float64
+	switch unit {
+	case "", "b", "byte", "bytes":
+		mul = 1
+	case "k", "kb", "kib":
+		mul = 1024
+	case "m", "mb", "mib":
+		mul = 1024 * 1024
+	case "g", "gb", "gib":
+		mul = 1024 * 1024 * 1024
+	case "t", "tb", "tib":
+		mul = 1024 * 1024 * 1024 * 1024
+	default:
+		return 0, fmt.Errorf("unknown size unit %q in %q", unit, s)
+	}
+	return int64(num * mul), nil
+}
+
+func hnswMemoryFitFindings(inv models.VectorInventory, database string, now time.Time) []models.Finding {
+	mem := MemoryContextFromSettings(inv.Settings)
+	if !mem.SharedBuffersKnown && !mem.EffectiveCacheKnown {
+		return nil
+	}
+	var out []models.Finding
+	for _, idx := range inv.Indexes {
+		if !idx.IsValid || idx.AccessMethod != "hnsw" || idx.SizeBytes <= 0 {
+			continue
+		}
+		exceedsShared := mem.SharedBuffersKnown && idx.SizeBytes > mem.SharedBuffersBytes
+		exceedsCache := mem.EffectiveCacheKnown && idx.SizeBytes > mem.EffectiveCacheBytes
+		if !exceedsShared && !exceedsCache {
+			continue
+		}
+		sev := models.SeverityInfo
+		if exceedsShared {
+			sev = models.SeverityWarning
+		}
+		if exceedsCache {
+			sev = models.SeverityWarning
+		}
+		desc := fmt.Sprintf(
+			"HNSW index %s.%s is %s.",
+			idx.Schema, idx.Name, prettyOrBytes(idx.SizePretty, idx.SizeBytes),
+		)
+		if mem.SharedBuffersKnown {
+			desc += fmt.Sprintf(" shared_buffers=%s.", mem.SharedBuffersPretty)
+		}
+		if mem.EffectiveCacheKnown {
+			desc += fmt.Sprintf(" effective_cache_size=%s.", mem.EffectiveCachePretty)
+		}
+		desc += " Vector search latency often jumps sharply once the graph no longer fits in cache and starts reading from disk."
+
+		ev := []models.Evidence{
+			{Kind: models.EvidenceFact, Source: "pg_relation_size", Description: "index_bytes", Value: fmt.Sprintf("%d", idx.SizeBytes)},
+			{Kind: models.EvidenceFact, Source: "pg_relation_size", Description: "index_pretty", Value: prettyOrBytes(idx.SizePretty, idx.SizeBytes)},
+		}
+		if mem.SharedBuffersKnown {
+			ev = append(ev,
+				models.Evidence{Kind: models.EvidenceFact, Source: "pg_settings", Description: "shared_buffers", Value: mem.SharedBuffersPretty},
+				models.Evidence{Kind: models.EvidenceFact, Source: "pg_settings", Description: "shared_buffers_bytes", Value: fmt.Sprintf("%d", mem.SharedBuffersBytes)},
+				models.Evidence{Kind: models.EvidenceFact, Source: "comparison", Description: "fits_shared_buffers", Value: strconv.FormatBool(!exceedsShared)},
+			)
+		}
+		if mem.EffectiveCacheKnown {
+			ev = append(ev,
+				models.Evidence{Kind: models.EvidenceFact, Source: "pg_settings", Description: "effective_cache_size", Value: mem.EffectiveCachePretty},
+				models.Evidence{Kind: models.EvidenceFact, Source: "pg_settings", Description: "effective_cache_size_bytes", Value: fmt.Sprintf("%d", mem.EffectiveCacheBytes)},
+				models.Evidence{Kind: models.EvidenceFact, Source: "comparison", Description: "fits_effective_cache_size", Value: strconv.FormatBool(!exceedsCache)},
+			)
+		}
+
+		out = append(out, models.Finding{
+			RuleID:              "VEC.HNSW_MEMORY_FIT",
+			Severity:            sev,
+			Database:            database,
+			Object:              idx.Schema + "." + idx.Name,
+			ObservedAt:          now,
+			Title:               "HNSW index may not fit in available cache memory",
+			Description:         desc,
+			Evidence:            ev,
+			ProbableCause:       "HNSW graph larger than PostgreSQL buffer cache and/or the planner's effective cache estimate.",
+			ConfidenceRationale: "Compares measured pg_relation_size to shared_buffers/effective_cache_size. Host RAM and OS page cache are not visible from catalogs, so this is a residency risk signal — not proof of disk I/O.",
+			Remediation:         "Ensure hot HNSW indexes fit in memory (raise host RAM / shared_buffers carefully, or shrink/split indexes). Validate latency with `pgscope vector recall` under representative concurrency.",
+			Risk:                models.RiskMedium,
+			Validation:          "Compare approx p95 with a warm cache vs after a cache drop in an isolated lab; watch buffer hit ratios during ANN queries.",
+		})
+	}
+	return out
+}
+
+func prettyOrBytes(pretty string, bytes int64) string {
+	if pretty != "" {
+		return pretty
+	}
+	return FormatStorageBytes(bytes)
 }
 
 func invalidIndexFindings(inv models.VectorInventory, database string, now time.Time) []models.Finding {

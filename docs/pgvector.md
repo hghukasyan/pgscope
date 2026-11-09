@@ -5,6 +5,7 @@ Detailed methodology: [PGVECTOR.md](../PGVECTOR.md).
 ## What is implemented
 
 - Discovery of vector types, operators, HNSW/IVFFlat indexes, and settings
+- HNSW index size vs `shared_buffers` / `effective_cache_size` (memory-fit signal)
 - Vector-aware EXPLAIN diagnostics
 - Opt-in Recall@K with exact baselines (`--authorize-benchmark`, `environment: isolated|lab`)
 - Filtered ANN cohort analysis
